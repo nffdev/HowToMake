@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
+import useSWR from 'swr';
 import Header from "@/components/nav/Header";
+import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
-import { FiSend } from 'react-icons/fi';
+import { ArrowLeft, Send } from 'lucide-react';
 import { BASE_API } from "../../config.json";
 
 export default function AddBlog() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetcher = (url) =>
+    fetch(`${BASE_API}${url}`, {
+      headers: { Authorization: `${localStorage.getItem("token")}` },
+    }).then((response) => response.json());
+
+  const { data: user } = useSWR('/user/me', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const manageSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +40,7 @@ export default function AddBlog() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `${localStorage.getItem('token')}`,
+          Authorization: `${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({ title, content }),
       });
@@ -52,17 +66,29 @@ export default function AddBlog() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-black text-[#00FF00] p-8"
+      className="min-h-screen bg-black text-[#00FF00] p-8 flex flex-col"
     >
-      <Header />
+      <Header user={user} />
+      <motion.div className="flex flex-col items-start">
+        <motion.button
+          onClick={() => navigate("/blogs")}
+          className="mb-4 flex items-center text-[#00FF00] hover:text-[#00FF00]/80 transition-colors"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10 }}
+        >
+          <ArrowLeft className="mr-2" size={20} />
+          Back
+        </motion.button>
+      </motion.div>
       <motion.div
-        className="flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center flex-grow"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 120 }}
       >
         <motion.h1
-          className="text-4xl mb-8 font-bold"
+          className="text-4xl mb-8 font-bold text-center"
           initial={{ y: -50 }}
           animate={{ y: 0 }}
           transition={{ type: 'spring', stiffness: 120 }}
@@ -109,7 +135,7 @@ export default function AddBlog() {
           >
             {isSubmitting ? 'Submitting...' : (
               <>
-                <FiSend className="mr-2" />
+                <Send className="mr-2" />
                 Submit
               </>
             )}

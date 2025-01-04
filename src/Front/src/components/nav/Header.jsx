@@ -19,6 +19,11 @@ export default function Header({ user }) {
               ABOUT
             </Link>
           </li>
+          <li>
+            <Link to="/blogs/create" className="hover:text-[#00FF00]/80 transition-colors underline">
+              CREATE BLOG
+            </Link>
+          </li>
           {user && user.id ? <>
             <li>
               <Link onClick={() => logout()} className="hover:text-[#00FF00]/80 transition-colors underline">
