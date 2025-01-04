@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from "@/lib/hooks/useAuth";
+import Header from "@/components/nav/Header";
 
 const posts = [
   {
@@ -18,7 +19,9 @@ export default function Dashboard() {
     const { user } = useAuth();
 
     return (
-        <main className="py-8 flex flex-col justify-center items-center min-h-screen bg-black text-[#00FF00]">
+        <div className="mx-auto px-4 min-h-screen bg-black text-[#00FF00]">
+          <main className="py-8">
+            <Header />
             <div className="border-b border-[#00FF00]/20 mb-8" />
             
             {posts.map((post, index) => (
@@ -45,5 +48,6 @@ export default function Dashboard() {
               </article>
             ))}
         </main>
+      </div>
     );
 }
