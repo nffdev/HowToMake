@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BASE_API } from "../../config.json";
 
 export default function Login() {
     const [datas, setDatas] = useState({ username: '', email: '', password: '' });
@@ -14,7 +15,7 @@ export default function Login() {
         if (!datas.password) return setError('Password is required.');
         
         setIsLoading(true);
-        fetch('http://localhost:8080/api/v1/auth/login', {
+        fetch(`${BASE_API}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

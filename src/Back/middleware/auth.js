@@ -8,8 +8,11 @@ module.exports = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: 'Unauthorized.' });
 
     req.user = user.toJSON();
+    
     delete req.user._id;
     delete req.user.__v;
+    delete req.user.token;
+    delete req.user.password;
 
     next();
 }

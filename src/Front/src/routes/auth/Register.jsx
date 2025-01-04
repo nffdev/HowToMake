@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BASE_API } from "../../config.json";
 
 export default function Register() {
     const [datas, setDatas] = useState({ username: '', email: '', password: '', confirmPassword: '' });
@@ -15,7 +16,7 @@ export default function Register() {
         if (!datas.confirmPassword) return setError('Password is required.');
         if (datas.password !== datas.confirmPassword) return setError('Passwords are not matching.');
 
-        fetch('http://localhost:8080/api/v1/auth/register', {
+        fetch(`${BASE_API}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,7 +58,7 @@ export default function Register() {
                 </label>
                 <div className="flex items-center justify-between w-full px-8 mt-10">
                     <h2 className="text-2xl font-extrabold mt-2 mb-2">Register</h2>
-                    <Button size='icon' onClick={() => login()} disabled={isLoading} className="bg-[#00FF00] text-black hover:bg-[#00FF00]/80">
+                    <Button size='icon' onClick={() => register()} disabled={isLoading} className="bg-[#00FF00] text-black hover:bg-[#00FF00]/80">
                         {isLoading ? 'Registering...' : <box-icon class="h-8 w-8 fill-black" name='right-arrow-alt'></box-icon>}
                     </Button>
                 </div>

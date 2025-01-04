@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from "@/lib/hooks/useAuth";
 import Header from "@/components/nav/Header";
 import { motion } from 'framer-motion';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 const posts = [
   {
@@ -13,8 +22,20 @@ const posts = [
     title: "ALPHV MALWARE ANALYSIS REPORT",
     date: "June 26, 2023",
     content: "Description The file is a 32-bit Windows executable that contains BlackCat Ransomware. BlackCat, also known as Noberus or ALPHV, is a sophisticated ransomware family programmed in Rust and deployed as part of Ransomware as a Service (RaaS) operations on Windows. The ransomware can be configured to encrypt files using..."
+  },
+  {
+    title: "NEW RANSOMWARE STRAIN DISCOVERED",
+    date: "July 15, 2024",
+    content: "A new ransomware strain has been discovered in the wild, targeting critical infrastructure. Initial analysis shows sophisticated encryption methods and evasion techniques..."
+  },
+  {
+    title: "CYBERSECURITY TRENDS FOR 2025",
+    date: "December 31, 2024",
+    content: "As we approach 2025, several cybersecurity trends are emerging. AI-driven threat detection, quantum-resistant encryption, and decentralized identity management are at the forefront..."
   }
 ];
+
+const POSTS_PER_PAGE = 2;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,8 +73,14 @@ const gridItemVariants = {
   }
 };
 
-export default function Blog() {
+export default function Blogs() {
     const { user } = useAuth();
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+    const endIndex = startIndex + POSTS_PER_PAGE;
+    const currentPosts = posts.slice(startIndex, endIndex);
 
     return (
         <div className="mx-auto px-4 min-h-screen bg-black text-[#00FF00] overflow-x-hidden">
@@ -71,7 +98,7 @@ export default function Blog() {
               transition={{ duration: 0.5 }}
             />
             
-            {posts.map((post, index) => (
+            {currentPosts.map((post, index) => (
               <motion.article key={index} className="relative mb-16 px-4" variants={articleVariants}>
                 <div className="grid grid-cols-[auto,1fr] gap-4">
                   <div className="grid grid-cols-3 gap-2 text-[#00FF00]/20">
@@ -113,7 +140,7 @@ export default function Blog() {
                   </div>
                 </div>
     
-                {index !== posts.length - 1 && (
+                {index !== currentPosts.length - 1 && (
                   <motion.div 
                     className="border-b border-[#00FF00]/20 mt-16"
                     initial={{ scaleX: 0 }}
@@ -123,6 +150,45 @@ export default function Blog() {
                 )}
               </motion.article>
             ))}
+
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(prev => Math.max(prev - 1, 1));
+                    }}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink 
+                      href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(i + 1);
+                      }}
+                      isActive={currentPage === i + 1}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                    }}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </motion.main>
         </div>
     );

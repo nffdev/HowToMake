@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { Loader2 } from "lucide-react";
 import { UserContext } from "@/lib/contexts/userContext";
-import { BASE_API, API_VERSION } from "../../config.json";
+import { BASE_API } from "../../config.json";
 import Login from "../../routes/auth/Login";
 
 export function useAuth() {
@@ -20,7 +20,7 @@ export function AuthWrapper({ children }) {
 		setIsLoading(true);
 
 		async function getUser() {
-			const data = await fetch(`${BASE_API}/v${API_VERSION}/users/@me`, { method: 'GET', headers: { 'Authorization': `${auth}` } }).then(response => response.json()).catch(() => null);
+			const data = await fetch(`${BASE_API}/user/me`, { method: 'GET', headers: { 'Authorization': `${auth}` } }).then(response => response.json()).catch(() => null);
 
 			if (data?.id) {
 				updateUser(data);
