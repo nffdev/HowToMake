@@ -1,6 +1,5 @@
 import React from 'react';
 import { useAuth } from "@/lib/hooks/useAuth";
-import { Link } from 'react-router-dom';
 
 const posts = [
   {
@@ -19,8 +18,7 @@ export default function Dashboard() {
     const { user } = useAuth();
 
     return (
-        <div className="max-w-[1200px] mx-auto px-4">
-          <main className="py-8">
+        <main className="py-8 flex flex-col justify-center items-center min-h-screen bg-black text-[#00FF00]">
             <div className="border-b border-[#00FF00]/20 mb-8" />
             
             {posts.map((post, index) => (
@@ -46,7 +44,6 @@ export default function Dashboard() {
                 )}
               </article>
             ))}
-          </main>
-        </div>
+        </main>
     );
 }
