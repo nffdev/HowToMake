@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import useSWR from 'swr';
-import { useAuth } from "@/lib/hooks/useAuth";
 import Header from "@/components/nav/Header";
 import { motion } from 'framer-motion';
 import {
@@ -78,7 +77,14 @@ const gridItemVariants = {
 export default function Blogs() {
     const [currentPage, setCurrentPage] = useState(1);
 
-    const fetcher = (url) => fetch(`${BASE_API}${url}`).then(response => response.json());
+    const fetcher = (url) => fetch(`${BASE_API}${url}`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } }).then(response => response.json());
+
+    const { data: user } = useSWR('/user/me', fetcher, {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    });
+
     const { data: posts, isLoading } = useSWR('/blogs', fetcher, {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -98,7 +104,7 @@ export default function Blogs() {
             animate="visible"
             variants={containerVariants}
           >
-            <Header />
+            <Header user={user} />
             <motion.div 
               className="border-b border-[#00FF00]/20 mb-8"
               initial={{ scaleX: 0 }}

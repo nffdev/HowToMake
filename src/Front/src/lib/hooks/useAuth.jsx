@@ -13,10 +13,10 @@ export function AuthWrapper({ children }) {
 	const { user, updateUser } = useAuth();
 	
 	const auth = localStorage.getItem('token');
-	if (window.location.pathname.startsWith('/auth/login') && auth) return window.location.replace('/dash/dashboard');
+	if (window.location.pathname.startsWith('/auth') && auth) return window.location.replace('/blogs');
 
 	useEffect(() => {
-		if (!window.location.pathname.startsWith('/dash/dashboard') || !auth || (user && user.id)) return;
+		if (!window.location.pathname.startsWith('/dash') || !auth || (user && user.id)) return;
 		setIsLoading(true);
 
 		async function getUser() {
@@ -31,7 +31,7 @@ export function AuthWrapper({ children }) {
 		getUser();
 	}, []);
 
-	if (!window.location.pathname.startsWith('/dash/dashboard')) return <>{children}</>;
+	if (!window.location.pathname.startsWith('/dash')) return <>{children}</>;
 	if (user && user.id) return <>{children}</>;
 	if (!auth) return <Login />;
 

@@ -45,19 +45,19 @@ export default function Register() {
                 {error ? <p className="text-red-500 text-center">{error}</p> : null}
                 <label htmlFor="username" className={`relative w-full ${error ? 'mt-2' : 'mt-12'}`}>
                     <box-icon class="fill-[#00FF00] opacity-30 w-6 h-6 absolute top-1/2 transform -translate-y-1/2 left-3" type='solid' name='user'></box-icon>
-                    <Input className="text-[#00FF00] bg-black border-[#00FF00]" onChange={(e) => setDatas(prev => ({ ...prev, username: e.target.value }))} type="username" name="username" id="username" placeholder="Username" />
+                    <Input className="text-[#00FF00] bg-black border-[#00FF00] mb-4 pl-10" onChange={(e) => setDatas(prev => ({ ...prev, username: e.target.value }))} type="username" name="username" id="username" placeholder="Username" />
                 </label>
                 <label htmlFor="email" className="relative w-full mt-4">
                     <box-icon class="fill-[#00FF00] opacity-30 w-6 h-6 absolute top-1/2 transform -translate-y-1/2 left-3" type='solid' name='user'></box-icon>
-                    <Input className="text-[#00FF00] bg-black border-[#00FF00]" onChange={(e) => setDatas(prev => ({ ...prev, email: e.target.value }))} type="email" name="email" id="email" placeholder="Email" />
+                    <Input className="text-[#00FF00] bg-black border-[#00FF00] mb-4 pl-10" onChange={(e) => setDatas(prev => ({ ...prev, email: e.target.value }))} type="email" name="email" id="email" placeholder="Email" />
                 </label>
                 <label htmlFor="password" className="relative w-full mt-4">
                     <box-icon class="fill-[#00FF00] opacity-30 w-6 h-6 absolute top-1/2 transform -translate-y-1/2 left-3" type='solid' name='lock-alt'></box-icon>
-                    <Input className="text-[#00FF00] bg-black border-[#00FF00]" onChange={(e) => setDatas(prev => ({ ...prev, password: e.target.value }))} type="password" name="password" id="password" placeholder="Password" />
+                    <Input className="text-[#00FF00] bg-black border-[#00FF00] mb-4 pl-10" onChange={(e) => setDatas(prev => ({ ...prev, password: e.target.value }))} type="password" name="password" id="password" placeholder="Password" />
                 </label>
                 <label htmlFor="confirmPassword" className="relative w-full mt-4">
                     <box-icon class="fill-[#00FF00] opacity-30 w-6 h-6 absolute top-1/2 transform -translate-y-1/2 left-3" type='solid' name='lock-alt'></box-icon>
-                    <Input className="text-[#00FF00] bg-black border-[#00FF00]" onChange={(e) => setDatas(prev => ({ ...prev, confirmPassword: e.target.value }))} type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password"></Input>
+                    <Input className="text-[#00FF00] bg-black border-[#00FF00] pl-10" onChange={(e) => setDatas(prev => ({ ...prev, confirmPassword: e.target.value }))} type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password"></Input>
                 </label>
                 <div className="flex items-center justify-between w-full px-8 mt-10">
                     <h2 className="text-2xl font-extrabold mt-2 mb-2">Register</h2>

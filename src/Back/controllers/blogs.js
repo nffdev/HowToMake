@@ -17,6 +17,19 @@ const getBlogs = async (req, res) => {
     return res.status(200).json(blogs);
 }
 
+const getBlog = async (req, res) => {
+    const { id } = req.params;
+
+    let blog = await Blog.findOne({ id });
+    if (!blog) return res.status(400).json({ message: 'There is no blog with this id.' });
+
+    blog = blog.toJSON();
+    delete blog._id;
+    delete blog.__v;
+
+    return res.status(200).json(blog);
+}
+
 const createBlog = async (req, res) => {
     const { title, content } = req.body;
 
@@ -81,6 +94,7 @@ const deleteBlog = async (req, res) => {
 
 module.exports = {
     getBlogs,
+    getBlog,
     createBlog,
     editBlog,
     deleteBlog
