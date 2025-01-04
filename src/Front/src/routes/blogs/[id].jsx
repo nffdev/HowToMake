@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from 'lucide-react';
 import useSWR from "swr";
 import Header from "@/components/nav/Header";
 import { motion } from "framer-motion";
@@ -7,6 +8,7 @@ import { BASE_API } from "../../config.json";
 
 export default function BlogDetail() {
   	const { id } = useParams();
+    const navigate = useNavigate();
 
   	const fetcher = (url) =>
 		fetch(`${BASE_API}${url}`, {
@@ -41,6 +43,16 @@ export default function BlogDetail() {
 				transition={{ type: "spring", stiffness: 100, damping: 12 }}
 				className="max-w-3xl mx-auto"
 			>
+                <motion.button
+                    onClick={() => navigate("/blogs")}
+                    className="mb-4 flex items-center text-[#00FF00] hover:text-[#00FF00]/80 transition-colors"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 10 }}
+                >
+                    <ArrowLeft className="mr-2" size={20} />
+                    Back
+                </motion.button>
 				<motion.h1
 					className="text-4xl font-bold mb-4"
 					initial={{ opacity: 0 }}

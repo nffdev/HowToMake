@@ -147,6 +147,7 @@ export default function Blogs() {
                       {post.createdAt}
                     </motion.time>
                     <motion.p 
+                      style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}
                       className="leading-relaxed"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
