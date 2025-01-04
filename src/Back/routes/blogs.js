@@ -10,6 +10,6 @@ router.get('/', getBlogs);
 router.get('/:id', getBlog);
 router.post('/', authMiddleware, createBlog);
 router.patch('/:id', authMiddleware, adminMiddleware, editBlog);
-router.delete('/:id', authMiddleware, adminMiddleware, deleteBlog);
+router.delete('/:id', authMiddleware, deleteBlog);
 
 module.exports = router;

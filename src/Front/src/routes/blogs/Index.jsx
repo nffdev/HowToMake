@@ -73,7 +73,7 @@ export default function Blogs() {
     revalidateOnReconnect: false,
   });
 
-  const manageDelete = async (postId) => { // TODO FIX ERROR
+  const manageDelete = async (postId) => { 
     try {
       const response = await fetch(`${BASE_API}/blogs/${postId}`, {
         method: "DELETE",
