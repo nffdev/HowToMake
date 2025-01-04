@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useSWR from 'swr';
 import Header from "@/components/nav/Header";
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Pagination,
@@ -76,6 +77,7 @@ const gridItemVariants = {
 
 export default function Blogs() {
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
 
     const fetcher = (url) => fetch(`${BASE_API}${url}`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } }).then(response => response.json());
 
@@ -129,7 +131,8 @@ export default function Blogs() {
                   
                   <div>
                     <motion.h2 
-                      className="text-xl mb-1"
+                      onClick={() => navigate(`/blogs/${post.id}`)}
+                      className="text-xl mb-1 cursor-pointer"
                       whileHover={{ scale: 1.05, originX: 0 }}
                       transition={{ type: 'spring', stiffness: 300 }}
                     >
