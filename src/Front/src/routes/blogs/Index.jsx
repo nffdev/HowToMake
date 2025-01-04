@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useSWR from 'swr';
 import { useAuth } from "@/lib/hooks/useAuth";
 import Header from "@/components/nav/Header";
 import { motion } from 'framer-motion';
@@ -11,6 +12,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { BASE_API } from "../../config.json";
 
 const posts = [
   {
@@ -74,13 +76,19 @@ const gridItemVariants = {
 };
 
 export default function Blogs() {
-    const { user } = useAuth();
     const [currentPage, setCurrentPage] = useState(1);
 
-    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const fetcher = (url) => fetch(`${BASE_API}${url}`).then(response => response.json());
+    const { data: posts, isLoading } = useSWR('/blogs', fetcher, {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
+    });
+
+    const totalPages = Math.ceil(posts?.length || 0 / POSTS_PER_PAGE);
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
     const endIndex = startIndex + POSTS_PER_PAGE;
-    const currentPosts = posts.slice(startIndex, endIndex);
+    const currentPosts = posts ? posts.slice(startIndex, endIndex) : [];
 
     return (
         <div className="mx-auto px-4 min-h-screen bg-black text-[#00FF00] overflow-x-hidden">
@@ -127,7 +135,7 @@ export default function Blogs() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
                     >
-                      {post.date}
+                      {post.createdAt}
                     </motion.time>
                     <motion.p 
                       className="leading-relaxed"

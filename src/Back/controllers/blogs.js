@@ -3,14 +3,18 @@ const moment = require('moment');
 const Blog = require('../models/Blog');
 
 const getBlogs = async (req, res) => {
-    const { page } = req.query;
+    let blogs = await Blog.find();
 
-    const maxPerPage = process.env.BLOGS_PER_PAGE;
-    const pageIndex = (parseInt(page) || 1) - 1;
+    blogs = blogs.map(b => {
+        const blog = b.toJSON();
 
-    const blogs = await Blog.find().lean();
+        delete blog._id;
+        delete blog.__v;
+        
+        return blog;
+    });
 
-    return res.status(200).json(blogs.slice(maxPerPage * (pageIndex), -maxPerPage));
+    return res.status(200).json(blogs);
 }
 
 const createBlog = async (req, res) => {

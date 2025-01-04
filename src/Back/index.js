@@ -31,7 +31,7 @@ const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/auth');
 
 app.use(base_route + '/user', authMiddleware, userRoutes);
-app.use(base_route + '/blogs', authMiddleware, blogsRoutes);
+app.use(base_route + '/blogs', blogsRoutes);
 app.use(base_route + '/auth', authRoutes);
 
 process

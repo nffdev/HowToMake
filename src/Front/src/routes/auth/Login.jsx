@@ -15,6 +15,8 @@ export default function Login() {
         if (!datas.password) return setError('Password is required.');
         
         setIsLoading(true);
+        setError('');
+
         fetch(`${BASE_API}/auth/login`, {
             method: 'POST',
             headers: {
@@ -27,7 +29,7 @@ export default function Login() {
                 setIsLoading(false);
                 if (json.token) {
                     localStorage.setItem('token', json.token);
-                    window.location.replace('/dash/dashboard');
+                    window.location.replace('/blogs');
                 } else {
                     setError(json.message || 'An error occured.');
                 }

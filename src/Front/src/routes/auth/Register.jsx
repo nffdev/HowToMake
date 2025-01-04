@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BASE_API } from "../../config.json";
@@ -16,6 +16,9 @@ export default function Register() {
         if (!datas.confirmPassword) return setError('Password is required.');
         if (datas.password !== datas.confirmPassword) return setError('Passwords are not matching.');
 
+        setIsLoading(true);
+        setError('');
+
         fetch(`${BASE_API}/auth/register`, {
             method: 'POST',
             headers: {
@@ -27,7 +30,7 @@ export default function Register() {
             .then(json => {
                 if (json.token) {
                     localStorage.setItem('token', json.token);
-                    window.location.replace('/dash/dashboard');
+                    window.location.replace('/blogs');
                 } else {
                     setError(json.message || 'An error occured.');
                 }
