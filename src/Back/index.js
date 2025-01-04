@@ -25,10 +25,13 @@ mongoose.connect(process.env.MONGO_URL)
 
 const base_route = '/api';
 
-// exemple
-const usersRoutes = require('./routes/users');
+const userRoutes = require('./routes/user');
+const blogsRoutes = require('./routes/blogs');
 const authRoutes = require('./routes/auth');
-app.use(base_route + '/users', usersRoutes);
+const authMiddleware = require('../middleware/auth');
+
+app.use(base_route + '/user', authMiddleware, userRoutes);
+app.use(base_route + '/blogs', authMiddleware, blogsRoutes);
 app.use(base_route + '/auth', authRoutes);
 
 process

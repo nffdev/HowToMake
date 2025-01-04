@@ -5,7 +5,8 @@ const blogSchema = new Schema({
     title: String,
     content: String,
     author: {
-        id: 
+        id: String,
+        username: String
     }
 });
 
