@@ -61,14 +61,25 @@ export default function BlogDetail() {
 				>
 					{blog.title}
 				</motion.h1>
-				<motion.time
-					className="text-[#00FF00]/60 block mb-4 text-sm"
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 0.2 }}
-				>
-					{new Date(blog.createdAt).toLocaleDateString()}
-				</motion.time>
+				<div className="flex items-center mb-6">
+					<motion.time
+						className="text-[#00FF00]/60 text-sm mr-4"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ delay: 0.2 }}
+					>
+						{new Date(blog.createdAt).toLocaleDateString()}
+					</motion.time>
+					<motion.div
+						className="flex items-center"
+						initial={{ opacity: 0, x: -10 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ delay: 0.3 }}
+					>
+						<span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
+						<span className="text-[#00FF00]/80 text-sm">Written by <span className="font-medium">{blog.author.username}</span></span>
+					</motion.div>
+				</div>
 				<motion.div
 					className="text-lg leading-relaxed"
 					initial={{ opacity: 0 }}

@@ -141,14 +141,25 @@ export default function Blogs() {
                 >
                   {post.title}
                 </motion.h2>
-                <motion.time
-                  className="text-[#00FF00]/60 block mb-4 text-sm"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  {post.createdAt}
-                </motion.time>
+                <div className="flex items-center mb-4">
+                  <motion.time
+                    className="text-[#00FF00]/60 text-sm mr-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {post.createdAt}
+                  </motion.time>
+                  <motion.span
+                    className="text-[#00FF00]/80 text-sm flex items-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.25 }}
+                  >
+                    <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
+                    By {post.author.username}
+                  </motion.span>
+                </div>
                 <motion.p
                   style={{
                     display: "-webkit-box",
