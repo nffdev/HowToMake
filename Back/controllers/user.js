@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Blog = require('../models/Blog');
 
 const getMe = async (req, res) => {
     return res.status(200).json(req.user);
@@ -65,6 +66,8 @@ const deleteUser = async (req, res) => {
         if (userId === process.env.OWNER_ID) {
             return res.status(403).json({ message: 'Cannot delete the owner account.' });
         }
+        
+        await Blog.deleteMany({ 'author.id': userId });
         
         await User.findOneAndDelete({ id: userId });
         
