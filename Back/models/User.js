@@ -5,7 +5,12 @@ const userSchema = new Schema({
     username: String,
     email: String,
     password: String,
-    token: String
+    token: String,
+    role: {
+        type: String,
+        enum: ['user', 'admin', 'owner'],
+        default: 'user'
+    }
 });
 
 module.exports = model('user', userSchema);

@@ -41,7 +41,9 @@ const register = async (req, res) => {
     const token = crypto.randomBytes(24).toString('hex');
     const id = DiscordSnowflake.generate().toString();
 
-    const user = new User({ id, username, email, password: hashedPassword, token });
+    const role = id === process.env.OWNER_ID ? 'owner' : 'user';
+    
+    const user = new User({ id, username, email, password: hashedPassword, token, role });
     await user.save();
 
     return res.json({ token });
