@@ -60,7 +60,7 @@ export default function Home() {
                             transition={{ type: "spring", stiffness: 120, damping: 10 }}
                         >
                             <ArrowLeft className="mr-2" size={20} />
-                            Explore All Blogs
+                            Explore All Users Blogs
                         </motion.button>
                         
                         <motion.h1
