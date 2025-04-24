@@ -1,12 +1,13 @@
 const { Router } = require('express');
 const router = Router();
 
-const { getBlogs, getBlog, createBlog, editBlog, deleteBlog } = require('../controllers/blogs');
+const { getBlogs, getBlog, getOwnerBlog, createBlog, editBlog, deleteBlog } = require('../controllers/blogs');
 
 const authMiddleware = require('../middleware/auth');
 const adminMiddleware = require('../middleware/admin');
 
 router.get('/', getBlogs);
+router.get('/owner', getOwnerBlog);
 router.get('/:id', getBlog);
 router.post('/', authMiddleware, createBlog);
 router.patch('/:id', authMiddleware, adminMiddleware, editBlog);

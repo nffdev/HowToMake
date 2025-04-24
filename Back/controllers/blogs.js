@@ -92,9 +92,23 @@ const deleteBlog = async (req, res) => {
     return res.status(204).send(null);
 }
 
+const getOwnerBlog = async (req, res) => {
+    const ownerId = process.env.OWNER_ID;
+    
+    let blog = await Blog.findOne({ 'author.id': ownerId }).sort({ id: -1 });
+    if (!blog) return res.status(404).json({ message: 'The owner has not published a blog yet.' });
+    
+    blog = blog.toJSON();
+    delete blog._id;
+    delete blog.__v;
+    
+    return res.status(200).json(blog);
+}
+
 module.exports = {
     getBlogs,
     getBlog,
+    getOwnerBlog,
     createBlog,
     editBlog,
     deleteBlog
