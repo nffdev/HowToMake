@@ -3,8 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" href="/logo.png" type="image/x-icon">
+    <link id="dynamic-favicon" rel="shortcut icon" href="/logo.png" type="image/x-icon">
     <title>HowToMake</title>
+    <script>
+      (function() {
+        const faviconLink = document.getElementById('dynamic-favicon');
+        
+        fetch('/src/config.json')
+          .then(response => response.json())
+          .then(config => {
+            const githubUsername = config.GITHUB_USERNAME;
+            return fetch(`https://api.github.com/users/${githubUsername}`);
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.avatar_url) {
+              faviconLink.href = data.avatar_url;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching GitHub profile:', error);
+          });
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
