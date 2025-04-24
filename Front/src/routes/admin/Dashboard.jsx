@@ -144,6 +144,31 @@ export default function AdminDashboard() {
             alert('An error occurred while updating the user role');
         }
     };
+    
+    const deleteUser = async (userId) => {
+        if (!window.confirm('Are you sure you want to delete this user?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${BASE_API}/user/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': localStorage.getItem('token')
+                }
+            });
+            
+            if (response.ok) {
+                refreshUsers();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || 'Failed to delete user'}`);
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('An error occurred while deleting the user');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black text-[#00FF00] p-8">
@@ -249,7 +274,12 @@ export default function AdminDashboard() {
                     </motion.div>
                 </div>
                 ) : (
-                    <div className="bg-black/40 p-6 rounded-lg border border-[#00FF00]/20">
+                    <motion.div 
+                        className="bg-black/40 p-6 rounded-lg border border-[#00FF00]/20"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 100, damping: 12 }}
+                    >
                         <h2 className="text-xl font-semibold mb-4">User Management</h2>
                         {usersLoading ? (
                             <p>Loading users...</p>
@@ -284,21 +314,33 @@ export default function AdminDashboard() {
                                                     {userItem.id !== OWNER_ID && (
                                                         <div className="flex space-x-2">
                                                             {userItem.role !== 'admin' && (
-                                                                <button 
+                                                                <motion.button 
                                                                     onClick={() => updateUserRole(userItem.id, 'admin')}
                                                                     className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded hover:bg-yellow-500/30 transition-colors"
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
                                                                 >
                                                                     Make Admin
-                                                                </button>
+                                                                </motion.button>
                                                             )}
                                                             {userItem.role !== 'user' && (
-                                                                <button 
+                                                                <motion.button 
                                                                     onClick={() => updateUserRole(userItem.id, 'user')}
                                                                     className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded hover:bg-blue-500/30 transition-colors"
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
                                                                 >
                                                                     Make User
-                                                                </button>
+                                                                </motion.button>
                                                             )}
+                                                            <motion.button 
+                                                                onClick={() => deleteUser(userItem.id)}
+                                                                className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded hover:bg-red-500/30 transition-colors"
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                            >
+                                                                Delete
+                                                            </motion.button>
                                                         </div>
                                                     )}
                                                     {userItem.id === OWNER_ID && (
@@ -313,7 +355,7 @@ export default function AdminDashboard() {
                         ) : (
                             <p>No users found</p>
                         )}
-                    </div>
+                    </motion.div>
                 )}
             </motion.div>
         </div>

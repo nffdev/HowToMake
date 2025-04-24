@@ -55,8 +55,28 @@ const updateUserRole = async (req, res) => {
     }
 }
 
+const deleteUser = async (req, res) => {
+    const { userId } = req.params;
+    
+    try {
+        const user = await User.findOne({ id: userId });
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+        
+        if (userId === process.env.OWNER_ID) {
+            return res.status(403).json({ message: 'Cannot delete the owner account.' });
+        }
+        
+        await User.findOneAndDelete({ id: userId });
+        
+        return res.status(204).send();
+    } catch (error) {
+        return res.status(500).json({ message: 'Error deleting user', error: error.message });
+    }
+};
+
 module.exports = {
     getMe,
     getAllUsers,
-    updateUserRole
+    updateUserRole,
+    deleteUser
 };
