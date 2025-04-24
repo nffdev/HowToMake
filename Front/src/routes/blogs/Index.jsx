@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from 'react-router-dom';
@@ -92,7 +92,14 @@ export default function Blogs() {
     }
   };
 
-  const totalPages = Math.ceil(posts?.length || 0 / POSTS_PER_PAGE);
+  const totalPages = Math.ceil((posts?.length || 0) / POSTS_PER_PAGE);
+  
+  useEffect(() => {
+    if (posts && currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [posts, currentPage, totalPages]);
+
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE;
   const currentPosts = posts ? posts.slice(startIndex, endIndex) : [];
