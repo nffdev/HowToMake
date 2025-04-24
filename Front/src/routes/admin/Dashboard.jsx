@@ -5,8 +5,21 @@ import Header from "@/components/nav/Header";
 import { motion } from "framer-motion";
 import { BASE_API, OWNER_ID } from "../../config.json";
 
+const TabButton = ({ active, onClick, children }) => (
+    <button
+        onClick={onClick}
+        className={`px-4 py-2 ${active 
+            ? 'bg-[#00FF00] text-black font-medium' 
+            : 'bg-black border border-[#00FF00]/30 text-[#00FF00] hover:bg-[#00FF00]/10'} 
+        rounded-md transition-colors`}
+    >
+        {children}
+    </button>
+);
+
 export default function AdminDashboard() {
     const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState('blogs');
 
     const fetcher = (url) =>
         fetch(`${BASE_API}${url}`, {
@@ -20,6 +33,12 @@ export default function AdminDashboard() {
     });
 
     const { data: blogs, isLoading: blogsLoading, mutate: refreshBlogs } = useSWR('/blogs', fetcher, {
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+    });
+    
+    const { data: users, isLoading: usersLoading, mutate: refreshUsers } = useSWR('/user/all', fetcher, {
         revalidateIfStale: false,
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
@@ -103,19 +122,58 @@ export default function AdminDashboard() {
         return null; 
     }
 
+    const updateUserRole = async (userId, newRole) => {
+        try {
+            const response = await fetch(`${BASE_API}/user/${userId}/role`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                },
+                body: JSON.stringify({ role: newRole })
+            });
+            
+            if (response.ok) {
+                refreshUsers();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || 'Failed to update user role'}`);
+            }
+        } catch (error) {
+            console.error('Error updating user role:', error);
+            alert('An error occurred while updating the user role');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-black text-[#00FF00] p-8">
             <Header user={user} />
             
             <motion.div
-                className="max-w-5xl mx-auto mt-8"
+                className="max-w-6xl mx-auto mt-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-3xl font-bold mb-8 border-b border-[#00FF00]/20 pb-4">Admin Dashboard</h1>
+                <h1 className="text-3xl font-bold mb-4 border-b border-[#00FF00]/20 pb-4">Admin Dashboard</h1>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex space-x-4 mb-8 mt-6">
+                    <TabButton 
+                        active={activeTab === 'blogs'} 
+                        onClick={() => setActiveTab('blogs')}
+                    >
+                        Manage Blogs
+                    </TabButton>
+                    <TabButton 
+                        active={activeTab === 'users'} 
+                        onClick={() => setActiveTab('users')}
+                    >
+                        Manage Users
+                    </TabButton>
+                </div>
+                
+                {activeTab === 'blogs' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <motion.div
                         className="bg-black/40 p-6 rounded-lg border border-[#00FF00]/20"
                         initial={{ opacity: 0, x: -20 }}
@@ -190,6 +248,73 @@ export default function AdminDashboard() {
                         )}
                     </motion.div>
                 </div>
+                ) : (
+                    <div className="bg-black/40 p-6 rounded-lg border border-[#00FF00]/20">
+                        <h2 className="text-xl font-semibold mb-4">User Management</h2>
+                        {usersLoading ? (
+                            <p>Loading users...</p>
+                        ) : users && users.length > 0 ? (
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-[#00FF00]/20">
+                                            <th className="text-left py-2 px-4">ID</th>
+                                            <th className="text-left py-2 px-4">Username</th>
+                                            <th className="text-left py-2 px-4">Email</th>
+                                            <th className="text-left py-2 px-4">Role</th>
+                                            <th className="text-left py-2 px-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map(userItem => (
+                                            <tr key={userItem.id} className="border-b border-[#00FF00]/10 hover:bg-[#00FF00]/5">
+                                                <td className="py-2 px-4 text-sm">{userItem.id}</td>
+                                                <td className="py-2 px-4">{userItem.username}</td>
+                                                <td className="py-2 px-4 text-sm">{userItem.email}</td>
+                                                <td className="py-2 px-4">
+                                                    <span className={`px-2 py-1 rounded-full text-xs ${userItem.role === 'owner' 
+                                                        ? 'bg-red-500/20 text-red-300' 
+                                                        : userItem.role === 'admin' 
+                                                        ? 'bg-yellow-500/20 text-yellow-300' 
+                                                        : 'bg-blue-500/20 text-blue-300'}`}>
+                                                        {userItem.role}
+                                                    </span>
+                                                </td>
+                                                <td className="py-2 px-4">
+                                                    {userItem.id !== OWNER_ID && (
+                                                        <div className="flex space-x-2">
+                                                            {userItem.role !== 'admin' && (
+                                                                <button 
+                                                                    onClick={() => updateUserRole(userItem.id, 'admin')}
+                                                                    className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded hover:bg-yellow-500/30 transition-colors"
+                                                                >
+                                                                    Make Admin
+                                                                </button>
+                                                            )}
+                                                            {userItem.role !== 'user' && (
+                                                                <button 
+                                                                    onClick={() => updateUserRole(userItem.id, 'user')}
+                                                                    className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded hover:bg-blue-500/30 transition-colors"
+                                                                >
+                                                                    Make User
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {userItem.id === OWNER_ID && (
+                                                        <span className="text-xs text-[#00FF00]/50">Owner (Protected)</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p>No users found</p>
+                        )}
+                    </div>
+                )}
             </motion.div>
         </div>
     );
