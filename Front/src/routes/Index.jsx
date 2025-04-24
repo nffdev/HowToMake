@@ -20,7 +20,7 @@ export default function Home() {
         revalidateOnReconnect: false
     });
 
-    const { data: ownerBlog, isLoading } = useSWR('/blogs/owner', fetcher, {
+    const { data: ownerBlogs, isLoading } = useSWR('/blogs/owner', fetcher, {
         revalidateIfStale: false,
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
@@ -43,7 +43,7 @@ export default function Home() {
                 </div>
             ) : isLoading ? (
                 <span>Loading...</span>
-            ) : ownerBlog?.id ? (
+            ) : ownerBlogs && ownerBlogs.length > 0 ? (
                 <>
                     <motion.div
                         className="border-b border-[#00FF00]/20 mb-8"
@@ -51,12 +51,7 @@ export default function Home() {
                         animate={{ scaleX: 1 }}
                         transition={{ duration: 0.5 }}
                     />
-                    <motion.article
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ type: "spring", stiffness: 100, damping: 12 }}
-                        className="max-w-3xl mx-auto"
-                    >
+                    <motion.div className="max-w-3xl mx-auto">
                         <motion.button
                             onClick={() => navigate("/blogs")}
                             className="mb-4 flex items-center text-[#00FF00] hover:text-[#00FF00]/80 transition-colors"
@@ -67,34 +62,101 @@ export default function Home() {
                             <ArrowLeft className="mr-2" size={20} />
                             Explore All Blogs
                         </motion.button>
+                        
                         <motion.h1
-                            className="text-4xl font-bold mb-4"
+                            className="text-3xl font-bold mb-6 text-center"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.1 }}
                         >
-                            {ownerBlog.title}
+                            Owner's Blogs
                         </motion.h1>
-                        <motion.time
-                            className="text-[#00FF00]/60 block mb-4 text-sm"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            {new Date(ownerBlog.createdAt).toLocaleDateString()}
-                        </motion.time>
-                        <motion.div
-                            className="text-lg leading-relaxed"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                        >
-                            {ownerBlog.content}
-                        </motion.div>
-                    </motion.article>
+                        
+                        {ownerBlogs.map((blog, index) => (
+                            <motion.article
+                                key={blog.id}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ 
+                                    type: "spring", 
+                                    stiffness: 100, 
+                                    damping: 12,
+                                    delay: index * 0.1
+                                }}
+                                className="mb-12"
+                            >
+                                <motion.h2
+                                    className="text-2xl font-bold mb-2 cursor-pointer"
+                                    onClick={() => navigate(`/blogs/${blog.id}`)}
+                                    whileHover={{ scale: 1.02, x: 5 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.1 + index * 0.1 }}
+                                >
+                                    {blog.title}
+                                </motion.h2>
+                                
+                                <div className="flex items-center mb-4">
+                                    <motion.time
+                                        className="text-[#00FF00]/60 text-sm mr-3"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.2 + index * 0.1 }}
+                                    >
+                                        {blog.createdAt}
+                                    </motion.time>
+                                    <motion.span
+                                        className="text-[#00FF00]/80 text-sm flex items-center"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.25 + index * 0.1 }}
+                                    >
+                                        <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
+                                        By {blog.author.username}
+                                    </motion.span>
+                                </div>
+                                
+                                <motion.p
+                                    style={{
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: "vertical",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                    }}
+                                    className="leading-relaxed mb-3"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.3 + index * 0.1 }}
+                                >
+                                    {blog.content}
+                                </motion.p>
+                                
+                                <motion.button
+                                    onClick={() => navigate(`/blogs/${blog.id}`)}
+                                    className="text-[#00FF00]/80 hover:text-[#00FF00] text-sm"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.4 + index * 0.1 }}
+                                    whileHover={{ x: 5 }}
+                                >
+                                    Read more →
+                                </motion.button>
+                                
+                                {index !== ownerBlogs.length - 1 && (
+                                    <motion.div
+                                        className="border-b border-[#00FF00]/20 mt-8"
+                                        initial={{ scaleX: 0 }}
+                                        animate={{ scaleX: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                                    />
+                                )}
+                            </motion.article>
+                        ))}
+                    </motion.div>
                 </>
             ) : (
-                <span>The owner has not published a blog yet.</span>
+                <span>The owner has not published any blogs yet.</span>
             )}
         </div>
     );

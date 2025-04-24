@@ -92,23 +92,36 @@ const deleteBlog = async (req, res) => {
     return res.status(204).send(null);
 }
 
-const getOwnerBlog = async (req, res) => {
-    const ownerId = process.env.OWNER_ID;
+const User = require('../models/User');
+
+const getOwnerBlogs = async (req, res) => {
+    const owners = await User.find({ role: 'owner' }, 'id');
+    const ownerIds = owners.map(owner => owner.id);
     
-    let blog = await Blog.findOne({ 'author.id': ownerId }).sort({ id: -1 });
-    if (!blog) return res.status(404).json({ message: 'The owner has not published a blog yet.' });
+    if (ownerIds.length === 0) {
+        return res.status(404).json({ message: 'No owners found in the system.' });
+    }
     
-    blog = blog.toJSON();
-    delete blog._id;
-    delete blog.__v;
+    let blogs = await Blog.find({ 'author.id': { $in: ownerIds } }).sort({ id: -1 });
     
-    return res.status(200).json(blog);
+    if (!blogs || blogs.length === 0) {
+        return res.status(404).json({ message: 'The owners have not published any blogs yet.' });
+    }
+    
+    blogs = blogs.map(b => {
+        const blog = b.toJSON();
+        delete blog._id;
+        delete blog.__v;
+        return blog;
+    });
+    
+    return res.status(200).json(blogs);
 }
 
 module.exports = {
     getBlogs,
     getBlog,
-    getOwnerBlog,
+    getOwnerBlogs,
     createBlog,
     editBlog,
     deleteBlog
