@@ -128,14 +128,34 @@ export default function Blogs() {
           >
             <div className="grid grid-cols-[auto,1fr] gap-4">
               <div className="grid grid-cols-3 gap-2 text-[#00FF00]/20">
-                {post.imageUrl ? (
+                {post.blocks && post.blocks.some(block => block.type === 'image') ? (
                   <motion.div 
                     className="col-span-3 row-span-3 w-24 h-24 overflow-hidden border-2 border-[#00FF00]/30"
                     variants={gridItemVariants}
                     whileHover={{ scale: 1.05 }}
                   >
                     <img 
-                      src={post.imageUrl} 
+                      src={post.blocks.find(block => block.type === 'image').content.startsWith('http') 
+                        ? post.blocks.find(block => block.type === 'image').content 
+                        : `${BASE_API}${post.blocks.find(block => block.type === 'image').content}`} 
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.parentNode.innerHTML = 
+                          '<div className="flex items-center justify-center w-full h-full bg-[#00FF00]/10">' +
+                          [...Array(9)].map(() => '+').join(' ') +
+                          '</div>';
+                      }}
+                    />
+                  </motion.div>
+                ) : post.imageUrl ? (
+                  <motion.div 
+                    className="col-span-3 row-span-3 w-24 h-24 overflow-hidden border-2 border-[#00FF00]/30"
+                    variants={gridItemVariants}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <img 
+                      src={post.imageUrl.startsWith('http') ? post.imageUrl : `${BASE_API}${post.imageUrl}`} 
                       alt={post.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -148,10 +168,10 @@ export default function Blogs() {
                   </motion.div>
                 ) : (
                   [...Array(9)].map((_, i) => (
-                    <motion.span
-                      key={i}
+                    <motion.span 
+                      key={i} 
+                      className="flex items-center justify-center w-8 h-8 border border-[#00FF00]/10"
                       variants={gridItemVariants}
-                      whileHover={{ scale: 1.2, color: "#00FF00" }}
                     >
                       +
                     </motion.span>
@@ -187,21 +207,65 @@ export default function Blogs() {
                     By {post.author.username}
                   </motion.span>
                 </div>
-                <motion.p
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                  className="leading-relaxed"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  {post.content}
-                </motion.p>
+                <div className="space-y-4">
+                  {post.blocks && post.blocks.length > 0 ? (
+                    post.blocks
+                      .sort((a, b) => a.position - b.position)
+                      .slice(0, 3)
+                      .map((block, blockIndex) => (
+                        <motion.div 
+                          key={`${post.id}-block-${blockIndex}`}
+                          className="w-full"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 + (blockIndex * 0.05) }}
+                        >
+                          {block.type === 'text' ? (
+                            <motion.p
+                              style={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              className="leading-relaxed w-full"
+                            >
+                              {block.content}
+                            </motion.p>
+                          ) : block.type === 'image' && (
+                            <div className="w-full max-w-[200px] mx-auto my-2">
+                              <img 
+                                src={block.content.startsWith('http') ? block.content : `${BASE_API}${block.content}`} 
+                                alt={`Image ${blockIndex + 1} for ${post.title}`}
+                                className="w-full h-24 object-cover rounded-md border-2 border-[#00FF00]/30"
+                                onError={(e) => {
+                                  console.error('Image load error:', block.content);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
+                        </motion.div>
+                      ))
+                  ) : (
+                    <motion.p
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                      className="leading-relaxed"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      {post.content}
+                    </motion.p>
+                  )}
+                </div>
                 {user && (user.id === post.author.id || user.id === OWNER_ID) && (
                   <button
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"

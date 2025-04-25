@@ -31,22 +31,44 @@ const getBlog = async (req, res) => {
 }
 
 const createBlog = async (req, res) => {
-    const { title, content, imageUrl } = req.body;
+    const { title, content, imageUrl, blocks } = req.body;
 
     if (!title) return res.status(400).json({ message: 'Title is required.' });
-    if (!content) return res.status(400).json({ message: 'Content is required.' });
+    
+    if (!content && (!blocks || blocks.length === 0)) {
+        return res.status(400).json({ message: 'Content or blocks are required.' });
+    }
 
     if (typeof title !== 'string') return res.status(400).json({ message: 'Title must be a string.' });
-    if (typeof content !== 'string') return res.status(400).json({ message: 'Content must be a string.' });
+    if (content && typeof content !== 'string') return res.status(400).json({ message: 'Content must be a string.' });
     if (imageUrl && typeof imageUrl !== 'string') return res.status(400).json({ message: 'Image URL must be a string.' });
+    
+    if (blocks) {
+        if (!Array.isArray(blocks)) {
+            return res.status(400).json({ message: 'Blocks must be an array.' });
+        }
+        
+        for (const block of blocks) {
+            if (!block.type || !['text', 'image'].includes(block.type)) {
+                return res.status(400).json({ message: 'Each block must have a valid type (text or image).' });
+            }
+            if (!block.content) {
+                return res.status(400).json({ message: 'Each block must have content.' });
+            }
+            if (block.position !== undefined && typeof block.position !== 'number') {
+                return res.status(400).json({ message: 'Block position must be a number.' });
+            }
+        }
+    }
 
     if (title.length > 50) return res.status(400).json({ message: 'The title may not exceed 50 characters.' });
 
     let blog = new Blog({
         id: DiscordSnowflake.generate().toString(),
         title,
-        content,
-        imageUrl,
+        content: content || '',
+        imageUrl: imageUrl || '',
+        blocks: blocks || [],
         createdAt: moment(new Date()).format('MMMM D, YYYY'),
         author: {
             id: req.user.id,

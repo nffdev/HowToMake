@@ -80,32 +80,68 @@ export default function BlogDetail() {
 						<span className="text-[#00FF00]/80 text-sm">Written by <span className="font-medium">{blog.author.username}</span></span>
 					</motion.div>
 				</div>
-				{blog.imageUrl && (
-					<motion.div
-						className="mb-6"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.25 }}
-					>
-						<img 
-							src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BASE_API}${blog.imageUrl}`} 
-							alt={blog.title} 
-							className="max-w-full rounded-md border-2 border-[#00FF00]/30 shadow-lg shadow-[#00FF00]/10"
-							onError={(e) => {
-								console.error('Image load error:', blog.imageUrl);
-								e.target.style.display = 'none';
-							}}
-						/>
-					</motion.div>
+				{blog.blocks && blog.blocks.length > 0 ? (
+					<div className="space-y-6">
+						{blog.blocks
+							.sort((a, b) => a.position - b.position)
+							.map((block, blockIndex) => (
+								<motion.div 
+									key={`block-${blockIndex}`}
+									className="w-full"
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.15 + (blockIndex * 0.05) }}
+								>
+									{block.type === 'text' ? (
+										<div className="text-lg leading-relaxed">
+											{block.content}
+										</div>
+									) : block.type === 'image' && (
+										<div className="w-full max-w-[80%] mx-auto my-4">
+											<img 
+												src={block.content.startsWith('http') ? block.content : `${BASE_API}${block.content}`} 
+												alt={`Image ${blockIndex + 1}`}
+												className="max-w-full rounded-md border-2 border-[#00FF00]/30 shadow-lg shadow-[#00FF00]/10"
+												onError={(e) => {
+													console.error('Image load error:', block.content);
+													e.target.style.display = 'none';
+												}}
+											/>
+										</div>
+									)}
+								</motion.div>
+							))}
+					</div>
+				) : (
+					<>
+						{blog.imageUrl && (
+							<motion.div
+								className="mb-6"
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.25 }}
+							>
+								<img 
+									src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BASE_API}${blog.imageUrl}`} 
+									alt={blog.title} 
+									className="max-w-full rounded-md border-2 border-[#00FF00]/30 shadow-lg shadow-[#00FF00]/10"
+									onError={(e) => {
+										console.error('Image load error:', blog.imageUrl);
+										e.target.style.display = 'none';
+									}}
+								/>
+							</motion.div>
+						)}
+						<motion.div
+							className="text-lg leading-relaxed"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ delay: 0.3 }}
+						>
+							{blog.content}
+						</motion.div>
+					</>
 				)}
-				<motion.div
-					className="text-lg leading-relaxed"
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 0.3 }}
-				>
-					{blog.content}
-				</motion.div>
 			</motion.article>
 		</> : <span>There is no blog with this id.</span>}
 		</div>

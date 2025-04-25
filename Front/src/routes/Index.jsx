@@ -116,40 +116,83 @@ export default function Home() {
                                     </motion.span>
                                 </div>
                                 
-                                <div className="flex flex-col md:flex-row gap-4 mb-3">
-                                    {blog.imageUrl && (
-                                        <motion.div
-                                            className="md:w-1/3 mb-3 md:mb-0"
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.25 + index * 0.1 }}
-                                        >
-                                            <img 
-                                                src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BASE_API}${blog.imageUrl}`} 
-                                                alt={blog.title}
-                                                className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
-                                                onError={(e) => {
-                                                    console.error('Image load error:', blog.imageUrl);
-                                                    e.target.style.display = 'none';
+                                <div className="flex flex-col gap-4 mb-3">
+                                    {blog.blocks && blog.blocks.length > 0 ? (
+                                        blog.blocks
+                                            .sort((a, b) => a.position - b.position)
+                                            .map((block, blockIndex) => (
+                                                <motion.div 
+                                                    key={`${blog.id}-block-${blockIndex}`}
+                                                    className="w-full"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: 0.15 + (index * 0.05) + (blockIndex * 0.03) }}
+                                                >
+                                                    {block.type === 'text' ? (
+                                                        <motion.p
+                                                            style={{
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 3,
+                                                                WebkitBoxOrient: "vertical",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                            }}
+                                                            className="leading-relaxed w-full"
+                                                        >
+                                                            {block.content}
+                                                        </motion.p>
+                                                    ) : block.type === 'image' && (
+                                                        <div className="w-full md:max-w-[60%] mx-auto mb-3">
+                                                            <img 
+                                                                src={block.content.startsWith('http') ? block.content : `${BASE_API}${block.content}`} 
+                                                                alt={`Image ${blockIndex + 1} for ${blog.title}`}
+                                                                className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
+                                                                onError={(e) => {
+                                                                    console.error('Image load error:', block.content);
+                                                                    e.target.style.display = 'none';
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            ))
+                                    ) : (
+                                        <div className="flex flex-col md:flex-row gap-4">
+                                            {blog.imageUrl && (
+                                                <motion.div
+                                                    className="md:w-1/3 mb-3 md:mb-0"
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: 0.25 + index * 0.1 }}
+                                                >
+                                                    <img 
+                                                        src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BASE_API}${blog.imageUrl}`} 
+                                                        alt={blog.title}
+                                                        className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
+                                                        onError={(e) => {
+                                                            console.error('Image load error:', blog.imageUrl);
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                </motion.div>
+                                            )}
+                                            <motion.p
+                                                style={{
+                                                    display: "-webkit-box",
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: "vertical",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
                                                 }}
-                                            />
-                                        </motion.div>
+                                                className={`leading-relaxed ${blog.imageUrl ? 'md:w-2/3' : 'w-full'}`}
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.3 + index * 0.1 }}
+                                            >
+                                                {blog.content}
+                                            </motion.p>
+                                        </div>
                                     )}
-                                    <motion.p
-                                        style={{
-                                            display: "-webkit-box",
-                                            WebkitLineClamp: 3,
-                                            WebkitBoxOrient: "vertical",
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                        }}
-                                        className={`leading-relaxed ${blog.imageUrl ? 'md:w-2/3' : 'w-full'}`}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.3 + index * 0.1 }}
-                                    >
-                                        {blog.content}
-                                    </motion.p>
                                 </div>
                                 
                                 <motion.button
