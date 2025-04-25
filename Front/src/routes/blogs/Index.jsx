@@ -170,7 +170,7 @@ export default function Blogs() {
                   [...Array(9)].map((_, i) => (
                     <motion.span 
                       key={i} 
-                      className="flex items-center justify-center w-8 h-8 border border-[#00FF00]/10"
+                      className="flex items-center justify-center w-8 h-8"
                       variants={gridItemVariants}
                     >
                       +
