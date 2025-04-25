@@ -10,7 +10,8 @@ router.post('/image', authMiddleware, upload.single('image'), (req, res) => {
       return res.status(400).json({ message: 'No image file provided' });
     }
     
-    const imageUrl = `/uploads/images/${path.basename(req.file.path)}`;
+    const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
+    const imageUrl = `${baseUrl}/api/uploads/images/${path.basename(req.file.path)}`;
     
     return res.status(200).json({ 
       imageUrl: imageUrl,

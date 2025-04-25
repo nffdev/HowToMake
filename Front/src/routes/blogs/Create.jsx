@@ -77,6 +77,7 @@ export default function AddBlog() {
       if (response.ok) {
         const data = await response.json();
         setImageUrl(data.imageUrl);
+        setImagePreview(data.imageUrl);
         setUploadProgress(100);
         setTimeout(() => setIsUploading(false), 500);
       } else {
@@ -291,7 +292,7 @@ export default function AddBlog() {
                     </motion.button>
                   </div>
                   <img 
-                    src={typeof imagePreview === 'string' && imagePreview.startsWith('/api') ? `${BASE_API}${imagePreview}` : imagePreview} 
+                    src={imagePreview} 
                     alt="Preview" 
                     className="max-h-40 max-w-full object-contain mx-auto"
                     onError={(e) => {
