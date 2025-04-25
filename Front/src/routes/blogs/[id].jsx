@@ -80,6 +80,23 @@ export default function BlogDetail() {
 						<span className="text-[#00FF00]/80 text-sm">Written by <span className="font-medium">{blog.author.username}</span></span>
 					</motion.div>
 				</div>
+				{blog.imageUrl && (
+					<motion.div
+						className="mb-6"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.25 }}
+					>
+						<img 
+							src={blog.imageUrl} 
+							alt={blog.title} 
+							className="max-w-full rounded-md border-2 border-[#00FF00]/30 shadow-lg shadow-[#00FF00]/10"
+							onError={(e) => {
+								e.target.style.display = 'none';
+							}}
+						/>
+					</motion.div>
+				)}
 				<motion.div
 					className="text-lg leading-relaxed"
 					initial={{ opacity: 0 }}

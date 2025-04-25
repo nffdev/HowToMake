@@ -4,6 +4,7 @@ const blogSchema = new Schema({
     id: String,
     title: String,
     content: String,
+    imageUrl: String,
     createdAt: String,
     author: {
         id: String,

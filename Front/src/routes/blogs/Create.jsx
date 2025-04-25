@@ -3,13 +3,15 @@ import useSWR from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Image as ImageIcon } from 'lucide-react';
 import { BASE_API } from "../../config.json";
 
 export default function AddBlog() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,7 +44,7 @@ export default function AddBlog() {
           'Content-Type': 'application/json',
           Authorization: `${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ title, content, imageUrl }),
       });
 
       const result = await response.json();
@@ -50,6 +52,8 @@ export default function AddBlog() {
       if (response.ok) {
         setTitle('');
         setContent('');
+        setImageUrl('');
+        setImagePreview(null);
         alert('Blog post submitted successfully!');
       } else {
         setError(result.message || 'An error occurred.');
@@ -125,6 +129,52 @@ export default function AddBlog() {
               required
               className="w-full h-64 p-2 bg-black border-2 border-[#00FF00] focus:outline-none focus:border-[#00FF00] text-[#FFF] resize-none"
             />
+          </div>
+          <div>
+            <label htmlFor="imageUrl" className="block mb-2 text-lg">Image URL (optional):</label>
+            <div className="flex space-x-2">
+              <motion.input
+                whileFocus={{ scale: 1.02 }}
+                type="url"
+                id="imageUrl"
+                value={imageUrl}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  if (!e.target.value) {
+                    setImagePreview(null);
+                  }
+                }}
+                placeholder="https://placehold.co/600x400"
+                className="flex-1 p-2 bg-black border-2 border-[#00FF00] focus:outline-none focus:border-[#00FF00] text-[#FFF]"
+              />
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (imageUrl) {
+                    setImagePreview(imageUrl);
+                  }
+                }}
+                className="p-2 bg-[#00FF00] text-black font-bold transition-colors duration-300 hover:bg-[#00CC00] flex items-center justify-center"
+              >
+                <ImageIcon size={20} />
+              </motion.button>
+            </div>
+            {imagePreview && (
+              <div className="mt-4 border-2 border-[#00FF00] p-2">
+                <p className="text-sm mb-2">Image Preview:</p>
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="max-h-40 max-w-full object-contain mx-auto"
+                  onError={() => {
+                    setError("Could not load image. Please check the URL.");
+                    setImagePreview(null);
+                  }}
+                />
+              </div>
+            )}
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}

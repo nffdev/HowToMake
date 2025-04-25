@@ -31,13 +31,14 @@ const getBlog = async (req, res) => {
 }
 
 const createBlog = async (req, res) => {
-    const { title, content } = req.body;
+    const { title, content, imageUrl } = req.body;
 
     if (!title) return res.status(400).json({ message: 'Title is required.' });
     if (!content) return res.status(400).json({ message: 'Content is required.' });
 
     if (typeof title !== 'string') return res.status(400).json({ message: 'Title must be a string.' });
     if (typeof content !== 'string') return res.status(400).json({ message: 'Content must be a string.' });
+    if (imageUrl && typeof imageUrl !== 'string') return res.status(400).json({ message: 'Image URL must be a string.' });
 
     if (title.length > 50) return res.status(400).json({ message: 'The title may not exceed 50 characters.' });
 
@@ -45,6 +46,7 @@ const createBlog = async (req, res) => {
         id: DiscordSnowflake.generate().toString(),
         title,
         content,
+        imageUrl,
         createdAt: moment(new Date()).format('MMMM D, YYYY'),
         author: {
             id: req.user.id,

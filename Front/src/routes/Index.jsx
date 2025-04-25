@@ -116,21 +116,40 @@ export default function Home() {
                                     </motion.span>
                                 </div>
                                 
-                                <motion.p
-                                    style={{
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                    }}
-                                    className="leading-relaxed mb-3"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.3 + index * 0.1 }}
-                                >
-                                    {blog.content}
-                                </motion.p>
+                                <div className="flex flex-col md:flex-row gap-4 mb-3">
+                                    {blog.imageUrl && (
+                                        <motion.div
+                                            className="md:w-1/3 mb-3 md:mb-0"
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.25 + index * 0.1 }}
+                                        >
+                                            <img 
+                                                src={blog.imageUrl} 
+                                                alt={blog.title}
+                                                className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                }}
+                                            />
+                                        </motion.div>
+                                    )}
+                                    <motion.p
+                                        style={{
+                                            display: "-webkit-box",
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: "vertical",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                        }}
+                                        className={`leading-relaxed ${blog.imageUrl ? 'md:w-2/3' : 'w-full'}`}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.3 + index * 0.1 }}
+                                    >
+                                        {blog.content}
+                                    </motion.p>
+                                </div>
                                 
                                 <motion.button
                                     onClick={() => navigate(`/blogs/${blog.id}`)}

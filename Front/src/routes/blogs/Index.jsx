@@ -128,15 +128,35 @@ export default function Blogs() {
           >
             <div className="grid grid-cols-[auto,1fr] gap-4">
               <div className="grid grid-cols-3 gap-2 text-[#00FF00]/20">
-                {[...Array(9)].map((_, i) => (
-                  <motion.span
-                    key={i}
+                {post.imageUrl ? (
+                  <motion.div 
+                    className="col-span-3 row-span-3 w-24 h-24 overflow-hidden border-2 border-[#00FF00]/30"
                     variants={gridItemVariants}
-                    whileHover={{ scale: 1.2, color: "#00FF00" }}
+                    whileHover={{ scale: 1.05 }}
                   >
-                    +
-                  </motion.span>
-                ))}
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.parentNode.innerHTML = 
+                          '<div className="flex items-center justify-center w-full h-full bg-[#00FF00]/10">' +
+                          [...Array(9)].map(() => '+').join(' ') +
+                          '</div>';
+                      }}
+                    />
+                  </motion.div>
+                ) : (
+                  [...Array(9)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      variants={gridItemVariants}
+                      whileHover={{ scale: 1.2, color: "#00FF00" }}
+                    >
+                      +
+                    </motion.span>
+                  ))
+                )}
               </div>
 
               <div>
