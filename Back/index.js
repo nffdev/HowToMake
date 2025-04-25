@@ -15,6 +15,8 @@ app.use(cors({
     methods: ['GET', 'POST', 'PATCH', 'DELETE']
 }));
 
+app.use('/api/uploads', express.static('uploads'));
+
 app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`))
 
 mongoose.connect(process.env.MONGO_URL)
@@ -28,11 +30,13 @@ const base_route = '/api';
 const userRoutes = require('./routes/user');
 const blogsRoutes = require('./routes/blogs');
 const authRoutes = require('./routes/auth');
+const uploadRoutes = require('./routes/upload');
 const authMiddleware = require('./middleware/auth');
 
 app.use(base_route + '/user', authMiddleware, userRoutes);
 app.use(base_route + '/blogs', blogsRoutes);
 app.use(base_route + '/auth', authRoutes);
+app.use(base_route + '/upload', uploadRoutes);
 
 process
     .setMaxListeners(0)

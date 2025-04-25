@@ -125,10 +125,11 @@ export default function Home() {
                                             transition={{ delay: 0.25 + index * 0.1 }}
                                         >
                                             <img 
-                                                src={blog.imageUrl} 
+                                                src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BASE_API}${blog.imageUrl}`} 
                                                 alt={blog.title}
                                                 className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
                                                 onError={(e) => {
+                                                    console.error('Image load error:', blog.imageUrl);
                                                     e.target.style.display = 'none';
                                                 }}
                                             />

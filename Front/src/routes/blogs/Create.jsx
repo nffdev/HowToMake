@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import useSWR from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Send, Image as ImageIcon, Upload, X } from 'lucide-react';
 import { BASE_API } from "../../config.json";
 
 export default function AddBlog() {
@@ -14,6 +14,9 @@ export default function AddBlog() {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
 
   const fetcher = (url) =>
     fetch(`${BASE_API}${url}`, {
@@ -25,6 +28,76 @@ export default function AddBlog() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setError('Only JPEG, PNG, GIF and WEBP images are allowed');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    setIsUploading(true);
+    setUploadProgress(0);
+    setError('');
+    
+    try {
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const newProgress = prev + Math.random() * 10;
+          return newProgress >= 90 ? 90 : newProgress;
+        });
+      }, 200);
+      
+      const response = await fetch(`${BASE_API}/upload/image`, {
+        method: 'POST',
+        headers: {
+          Authorization: `${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+      
+      clearInterval(progressInterval);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setImageUrl(data.imageUrl);
+        setUploadProgress(100);
+        setTimeout(() => setIsUploading(false), 500);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to upload image');
+        setIsUploading(false);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setError('Error uploading image. Please try again.');
+      setIsUploading(false);
+    }
+  };
+  
+  const handleRemoveImage = () => {
+    setImageUrl('');
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const manageSubmit = async (e) => {
     e.preventDefault();
@@ -131,50 +204,106 @@ export default function AddBlog() {
             />
           </div>
           <div>
-            <label htmlFor="imageUrl" className="block mb-2 text-lg">Image URL (optional):</label>
-            <div className="flex space-x-2">
-              <motion.input
-                whileFocus={{ scale: 1.02 }}
-                type="url"
-                id="imageUrl"
-                value={imageUrl}
-                onChange={(e) => {
-                  setImageUrl(e.target.value);
-                  if (!e.target.value) {
-                    setImagePreview(null);
-                  }
-                }}
-                placeholder="https://placehold.co/600x400"
-                className="flex-1 p-2 bg-black border-2 border-[#00FF00] focus:outline-none focus:border-[#00FF00] text-[#FFF]"
-              />
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  if (imageUrl) {
-                    setImagePreview(imageUrl);
-                  }
-                }}
-                className="p-2 bg-[#00FF00] text-black font-bold transition-colors duration-300 hover:bg-[#00CC00] flex items-center justify-center"
-              >
-                <ImageIcon size={20} />
-              </motion.button>
-            </div>
-            {imagePreview && (
-              <div className="mt-4 border-2 border-[#00FF00] p-2">
-                <p className="text-sm mb-2">Image Preview:</p>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
-                  className="max-h-40 max-w-full object-contain mx-auto"
-                  onError={() => {
-                    setError("Could not load image. Please check the URL.");
-                    setImagePreview(null);
+            <label htmlFor="image" className="block mb-2 text-lg">Image (optional):</label>
+            <div className="space-y-4">
+              <div className="flex space-x-2">
+                <motion.input
+                  whileFocus={{ scale: 1.02 }}
+                  type="url"
+                  id="imageUrl"
+                  value={imageUrl}
+                  onChange={(e) => {
+                    setImageUrl(e.target.value);
+                    if (!e.target.value) {
+                      setImagePreview(null);
+                    }
                   }}
+                  placeholder="https://placehold.co/600x400"
+                  className="flex-1 p-2 bg-black border-2 border-[#00FF00] focus:outline-none focus:border-[#00FF00] text-[#FFF]"
                 />
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (imageUrl) {
+                      setImagePreview(imageUrl);
+                    }
+                  }}
+                  className="p-2 bg-[#00FF00] text-black font-bold transition-colors duration-300 hover:bg-[#00CC00] flex items-center justify-center"
+                >
+                  <ImageIcon size={20} />
+                </motion.button>
               </div>
-            )}
+              
+              <div className="text-center">
+                <p className="text-sm mb-2">- OR -</p>
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <input 
+                  type="file" 
+                  id="image" 
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="hidden" 
+                  onChange={(e) => handleImageUpload(e.target.files[0])}
+                  ref={fileInputRef}
+                />
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => fileInputRef.current.click()}
+                  className="w-full p-2 border-2 border-dashed border-[#00FF00] bg-black hover:bg-[#00FF00]/10 transition-colors flex items-center justify-center"
+                  disabled={isUploading}
+                >
+                  {isUploading ? (
+                    <div className="flex flex-col items-center w-full">
+                      <p className="mb-2">Uploading... {Math.round(uploadProgress)}%</p>
+                      <div className="w-full bg-[#003300] h-2 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-[#00FF00] h-full transition-all duration-300 ease-out" 
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload size={20} className="mr-2" />
+                      Upload Image
+                    </>
+                  )}
+                </motion.button>
+              </div>
+              
+              {imagePreview && (
+                <div className="mt-4 border-2 border-[#00FF00] p-2 relative">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm">Image Preview:</p>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleRemoveImage}
+                      className="text-red-500 hover:text-red-400"
+                    >
+                      <X size={18} />
+                    </motion.button>
+                  </div>
+                  <img 
+                    src={typeof imagePreview === 'string' && imagePreview.startsWith('/api') ? `${BASE_API}${imagePreview}` : imagePreview} 
+                    alt="Preview" 
+                    className="max-h-40 max-w-full object-contain mx-auto"
+                    onError={(e) => {
+                      console.error('Image preview error:', imagePreview);
+                      setError("Could not load image. Please try again.");
+                      setImagePreview(null);
+                      setImageUrl('');
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
