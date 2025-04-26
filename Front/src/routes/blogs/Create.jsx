@@ -238,6 +238,7 @@ export default function AddBlog() {
       const result = await response.json();
 
       if (response.ok) {
+        sessionStorage.setItem('newBlogCreated', 'true');
         navigate(`/blogs/${result.id}`);
       } else {
         setError(result.message || 'Failed to create blog');

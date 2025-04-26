@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from 'lucide-react';
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import Header from "@/components/nav/Header";
 import { motion } from "framer-motion";
 import { BASE_API } from "../config.json";
@@ -25,6 +25,14 @@ export default function Home() {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
     });
+
+    useEffect(() => {
+        const newBlogCreated = sessionStorage.getItem('newBlogCreated');
+        if (newBlogCreated === 'true') {
+            sessionStorage.removeItem('newBlogCreated');
+            mutate('/blogs/owner');
+        }
+    }, []);
 
     return (
         <div className="min-h-screen bg-black text-[#00FF00] p-8">

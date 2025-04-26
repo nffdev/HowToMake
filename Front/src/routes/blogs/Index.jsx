@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -84,7 +84,8 @@ export default function Blogs() {
       });
       if (response.ok) {
         alert("Blog deleted successfully.");
-        window.location.reload(); 
+        mutate('/blogs');
+        mutate('/blogs/owner');
       } else {
         alert("Failed to delete blog."); 
       }
@@ -100,6 +101,14 @@ export default function Blogs() {
       setCurrentPage(totalPages);
     }
   }, [posts, currentPage, totalPages]);
+
+  useEffect(() => {
+    const newBlogCreated = sessionStorage.getItem('newBlogCreated');
+    if (newBlogCreated === 'true') {
+      sessionStorage.removeItem('newBlogCreated');
+      mutate('/blogs');
+    }
+  }, []);
 
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE;
