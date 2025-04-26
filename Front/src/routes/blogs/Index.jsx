@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FileText } from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -296,12 +297,12 @@ export default function Blogs() {
             transition={{ duration: 0.5 }}
           >
             <motion.div 
-              className="text-[#00FF00]/80 text-6xl mb-4"
+              className="text-[#00FF00]/80 mb-4 flex justify-center"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 10 }}
             >
-              📝
+              <FileText size={64} className="text-[#00FF00]/80" />
             </motion.div>
             <motion.h2 
               className="text-2xl font-bold mb-2"
