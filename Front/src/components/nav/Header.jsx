@@ -21,6 +21,11 @@ export default function Header({ user }) {
             </Link>
           </li>
           <li>
+            <Link to="/blogs" className="hover:text-[#00FF00]/80 transition-colors underline">
+              BLOGS
+            </Link>
+          </li>
+          <li>
             <Link to="/blogs/create" className="hover:text-[#00FF00]/80 transition-colors underline">
               CREATE BLOG
             </Link>
