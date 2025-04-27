@@ -75,21 +75,34 @@ export default function Blogs() {
 
   const manageDelete = async (postId) => { 
     try {
+      if (posts) {
+        const updatedPosts = posts.filter(post => post.id !== postId);
+        
+        mutatePosts(updatedPosts, false);
+      }
+      
       const response = await fetch(`${BASE_API}/blogs/${postId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `${localStorage.getItem("token")}`,
         },
       });
+      
       if (response.ok) {
-        alert("Blog deleted successfully.");
         mutatePosts(undefined, { revalidate: true });
         mutate('/blogs/owner', undefined, { revalidate: true });
+        
+        setTimeout(() => {
+          alert("Blog deleted successfully.");
+        }, 100);
       } else {
+        mutatePosts(undefined, { revalidate: true });
         alert("Failed to delete blog."); 
       }
     } catch (error) {
-      console.error("Error deleting blog:", error); 
+      console.error("Error deleting blog:", error);
+      mutatePosts(undefined, { revalidate: true });
+      alert("An error occurred while deleting the blog.");
     }
   };
 
