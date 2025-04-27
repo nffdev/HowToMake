@@ -68,10 +68,11 @@ export default function Blogs() {
     revalidateOnReconnect: false,
   });
 
-  const { data: posts, isLoading } = useSWR("/blogs", fetcher, {
-    revalidateIfStale: false,
+  const { data: posts, isLoading, mutate: mutatePosts } = useSWR("/blogs", fetcher, {
+    revalidateIfStale: true,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    dedupingInterval: 2000,
   });
 
   const manageDelete = async (postId) => { 
@@ -84,8 +85,8 @@ export default function Blogs() {
       });
       if (response.ok) {
         alert("Blog deleted successfully.");
-        mutate('/blogs');
-        mutate('/blogs/owner');
+        mutatePosts(undefined, { revalidate: true });
+        mutate('/blogs/owner', undefined, { revalidate: true });
       } else {
         alert("Failed to delete blog."); 
       }
@@ -105,11 +106,10 @@ export default function Blogs() {
   useEffect(() => {
     const checkAndUpdateBlogs = () => {
       const newBlogCreated = sessionStorage.getItem('newBlogCreated');
-      const lastBlogCreated = sessionStorage.getItem('lastBlogCreated');
       
       if (newBlogCreated === 'true') {
         console.log('New blog created, refreshing blogs list');
-        mutate('/blogs', undefined, { revalidate: true });
+        mutatePosts(undefined, { revalidate: true });
         
         sessionStorage.removeItem('newBlogCreated');
       }
@@ -117,30 +117,24 @@ export default function Blogs() {
     
     checkAndUpdateBlogs();
     
+    const handleBlogCreated = (event) => {
+      mutatePosts(undefined, { revalidate: true });
+    };
+    
     const handleStorageChange = (e) => {
-      if (e.key === 'newBlogCreated' || e.key === 'lastBlogCreated') {
+      if (e.key === 'newBlogCreated') {
         checkAndUpdateBlogs();
       }
     };
     
+    window.addEventListener('blogCreated', handleBlogCreated);
     window.addEventListener('storage', handleStorageChange);
     
     return () => {
+      window.removeEventListener('blogCreated', handleBlogCreated);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
-
-  useEffect(() => {
-    const handleFocus = () => {
-      mutate('/blogs', undefined, { revalidate: true });
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
+  }, [mutatePosts]);
 
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE;

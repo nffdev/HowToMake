@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion';
@@ -238,32 +238,22 @@ export default function AddBlog() {
       const result = await response.json();
 
       if (response.ok) {
+        console.log('Blog created successfully, updating all blog lists');
+        
         try {
-          const blogsResponse = await fetch(`${BASE_API}/blogs`, {
-            headers: { Authorization: `${localStorage.getItem("token")}` },
-          });
-          const ownerBlogsResponse = await fetch(`${BASE_API}/blogs/owner`, {
-            headers: { Authorization: `${localStorage.getItem("token")}` },
-          });
+          mutate('/blogs', undefined, { revalidate: true });
+          mutate('/blogs/owner', undefined, { revalidate: true });
           
-          if (blogsResponse.ok && ownerBlogsResponse.ok) {
-            const blogsData = await blogsResponse.json();
-            const ownerBlogsData = await ownerBlogsResponse.json();
-            
-            mutate('/blogs', blogsData, false);
-            mutate('/blogs/owner', ownerBlogsData, false);
-            
-            sessionStorage.setItem('newBlogCreated', 'true');
-            sessionStorage.setItem('lastBlogCreated', Date.now().toString());
-            
+          sessionStorage.setItem('newBlogCreated', 'true');
+          
+          const event = new CustomEvent('blogCreated', { detail: { id: result.id } });
+          window.dispatchEvent(event);
+          
+          setTimeout(() => {
             navigate(`/blogs/${result.id}`);
-          } else {
-            sessionStorage.setItem('newBlogCreated', 'true');
-            navigate(`/blogs/${result.id}`);
-          }
+          }, 300);
         } catch (error) {
           console.error('Error updating blog lists:', error);
-          sessionStorage.setItem('newBlogCreated', 'true');
           navigate(`/blogs/${result.id}`);
         }
       } else {
