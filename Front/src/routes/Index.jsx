@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from 'lucide-react';
 import useSWR, { mutate } from "swr";
@@ -8,6 +8,7 @@ import { BASE_API } from "../config.json";
 
 export default function Home() {
     const navigate = useNavigate();
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const fetcher = (url) =>
         fetch(`${BASE_API}${url}`, {
@@ -20,19 +21,34 @@ export default function Home() {
         revalidateOnReconnect: false
     });
 
-    const { data: ownerBlogs, isLoading } = useSWR('/blogs/owner', fetcher, {
+    const { data: ownerBlogs, isLoading, mutate: mutateOwnerBlogs } = useSWR('/blogs/owner', fetcher, {
         revalidateIfStale: false,
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
+        refreshInterval: 0,
+        dedupingInterval: 0,
+        key: `/blogs/owner?refresh=${refreshKey}`
     });
 
     useEffect(() => {
         const newBlogCreated = sessionStorage.getItem('newBlogCreated');
         if (newBlogCreated === 'true') {
+            // console.log('New blog created, refreshing owner blogs');
             sessionStorage.removeItem('newBlogCreated');
-            mutate('/blogs/owner');
+            mutateOwnerBlogs();
+            setRefreshKey(prev => prev + 1);
         }
-    }, []);
+    }, [mutateOwnerBlogs]);
+
+    useEffect(() => {
+        mutateOwnerBlogs();
+
+        const interval = setInterval(() => {
+            mutateOwnerBlogs();
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [mutateOwnerBlogs]);
 
     return (
         <div className="min-h-screen bg-black text-[#00FF00] p-8">
