@@ -13,9 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { BASE_API, OWNER_ID } from "../../config.json";
-
-const POSTS_PER_PAGE = 2;
+import { BASE_API, OWNER_ID, POSTS_PER_PAGE } from "../../config.json";
 
 const containerVariants = {
   hidden: { opacity: 0 },
