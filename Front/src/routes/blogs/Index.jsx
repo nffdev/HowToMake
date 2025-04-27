@@ -103,11 +103,43 @@ export default function Blogs() {
   }, [posts, currentPage, totalPages]);
 
   useEffect(() => {
-    const newBlogCreated = sessionStorage.getItem('newBlogCreated');
-    if (newBlogCreated === 'true') {
-      sessionStorage.removeItem('newBlogCreated');
-      mutate('/blogs');
-    }
+    const checkAndUpdateBlogs = () => {
+      const newBlogCreated = sessionStorage.getItem('newBlogCreated');
+      const lastBlogCreated = sessionStorage.getItem('lastBlogCreated');
+      
+      if (newBlogCreated === 'true') {
+        console.log('New blog created, refreshing blogs list');
+        mutate('/blogs', undefined, { revalidate: true });
+        
+        sessionStorage.removeItem('newBlogCreated');
+      }
+    };
+    
+    checkAndUpdateBlogs();
+    
+    const handleStorageChange = (e) => {
+      if (e.key === 'newBlogCreated' || e.key === 'lastBlogCreated') {
+        checkAndUpdateBlogs();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      mutate('/blogs', undefined, { revalidate: true });
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;

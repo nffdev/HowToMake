@@ -238,8 +238,34 @@ export default function AddBlog() {
       const result = await response.json();
 
       if (response.ok) {
-        sessionStorage.setItem('newBlogCreated', 'true');
-        navigate(`/blogs/${result.id}`);
+        try {
+          const blogsResponse = await fetch(`${BASE_API}/blogs`, {
+            headers: { Authorization: `${localStorage.getItem("token")}` },
+          });
+          const ownerBlogsResponse = await fetch(`${BASE_API}/blogs/owner`, {
+            headers: { Authorization: `${localStorage.getItem("token")}` },
+          });
+          
+          if (blogsResponse.ok && ownerBlogsResponse.ok) {
+            const blogsData = await blogsResponse.json();
+            const ownerBlogsData = await ownerBlogsResponse.json();
+            
+            mutate('/blogs', blogsData, false);
+            mutate('/blogs/owner', ownerBlogsData, false);
+            
+            sessionStorage.setItem('newBlogCreated', 'true');
+            sessionStorage.setItem('lastBlogCreated', Date.now().toString());
+            
+            navigate(`/blogs/${result.id}`);
+          } else {
+            sessionStorage.setItem('newBlogCreated', 'true');
+            navigate(`/blogs/${result.id}`);
+          }
+        } catch (error) {
+          console.error('Error updating blog lists:', error);
+          sessionStorage.setItem('newBlogCreated', 'true');
+          navigate(`/blogs/${result.id}`);
+        }
       } else {
         setError(result.message || 'Failed to create blog');
         setIsSubmitting(false);

@@ -31,23 +31,54 @@ export default function Home() {
     });
 
     useEffect(() => {
-        const newBlogCreated = sessionStorage.getItem('newBlogCreated');
-        if (newBlogCreated === 'true') {
-            // console.log('New blog created, refreshing owner blogs');
-            sessionStorage.removeItem('newBlogCreated');
-            mutateOwnerBlogs();
-            setRefreshKey(prev => prev + 1);
-        }
+        const checkAndUpdateBlogs = () => {
+            const newBlogCreated = sessionStorage.getItem('newBlogCreated');
+            const lastBlogCreated = sessionStorage.getItem('lastBlogCreated');
+            
+            if (newBlogCreated === 'true') {
+                console.log('New blog created, refreshing owner blogs list');
+                mutate('/blogs/owner', undefined, { revalidate: true });
+                
+                sessionStorage.removeItem('newBlogCreated');
+            }
+        };
+        
+        checkAndUpdateBlogs();
+        
+        const handleStorageChange = (e) => {
+            if (e.key === 'newBlogCreated' || e.key === 'lastBlogCreated') {
+                checkAndUpdateBlogs();
+            }
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, [mutateOwnerBlogs]);
 
     useEffect(() => {
         mutateOwnerBlogs();
 
         const interval = setInterval(() => {
-            mutateOwnerBlogs();
+            mutateOwnerBlogs(undefined, { revalidate: true });
         }, 5000);
 
         return () => clearInterval(interval);
+    }, [mutateOwnerBlogs]);
+    
+    useEffect(() => {
+        const handleFocus = () => {
+            mutateOwnerBlogs(undefined, { revalidate: true });
+            setRefreshKey(prev => prev + 1);
+        };
+        
+        window.addEventListener('focus', handleFocus);
+        
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+        };
     }, [mutateOwnerBlogs]);
 
     return (
