@@ -380,6 +380,7 @@ export default function Blogs() {
                   onClick={(e) => {
                     e.preventDefault();
                     setCurrentPage((prev) => Math.max(prev - 1, 1));
+                    mutatePosts(undefined, { revalidate: true });
                   }}
                   className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                 />
@@ -391,6 +392,7 @@ export default function Blogs() {
                     onClick={(e) => {
                       e.preventDefault();
                       setCurrentPage(i + 1);
+                      mutatePosts(undefined, { revalidate: true });
                     }}
                     isActive={currentPage === i + 1}
                   >
@@ -404,6 +406,7 @@ export default function Blogs() {
                   onClick={(e) => {
                     e.preventDefault();
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                    mutatePosts(undefined, { revalidate: true });
                   }}
                   className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                 />
