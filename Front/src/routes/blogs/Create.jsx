@@ -281,7 +281,7 @@ export default function AddBlog() {
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <span className="mr-2 text-sm">
-              {block.type === 'text' ? 'Texte' : 'Image'}
+              {block.type === 'text' ? 'Text' : 'Image'}
             </span>
             <span className="text-xs text-[#00FF00]/60">Position: {block.position}</span>
           </div>
