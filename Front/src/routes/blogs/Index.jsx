@@ -3,7 +3,7 @@ import useSWR, { mutate } from 'swr';
 import Header from "@/components/nav/Header";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FileText } from 'lucide-react';
+import { FileText, Clock } from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -236,24 +236,35 @@ export default function Blogs() {
                   >
                     {post.title}
                   </motion.h2>
-                  <div className="flex items-center mb-4">
-                    <motion.time
-                      className="text-[#00FF00]/60 text-sm mr-3"
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center">
+                      <motion.time
+                        className="text-[#00FF00]/60 text-sm mr-3"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        {post.createdAt}
+                      </motion.time>
+                      <motion.span
+                        className="text-[#00FF00]/80 text-sm flex items-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.25 }}
+                      >
+                        <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
+                        By {post.author.username}
+                      </motion.span>
+                    </div>
+                    <motion.div 
+                      className="flex items-center text-[#00FF00]/60 text-xs"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
+                      transition={{ delay: 0.3 }}
                     >
-                      {post.createdAt}
-                    </motion.time>
-                    <motion.span
-                      className="text-[#00FF00]/80 text-sm flex items-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.25 }}
-                    >
-                      <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
-                      By {post.author.username}
-                    </motion.span>
+                      <Clock size={12} className="mr-1" />
+                      <span>5 min read</span>
+                    </motion.div>
                   </div>
                   <div className="space-y-4">
                     {post.blocks && post.blocks.length > 0 ? (

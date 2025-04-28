@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import useSWR, { mutate } from "swr";
 import Header from "@/components/nav/Header";
 import { motion } from "framer-motion";
@@ -137,24 +137,35 @@ export default function Home() {
                                     {blog.title}
                                 </motion.h2>
                                 
-                                <div className="flex items-center mb-4">
-                                    <motion.time
-                                        className="text-[#00FF00]/60 text-sm mr-3"
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center">
+                                        <motion.time
+                                            className="text-[#00FF00]/60 text-sm mr-3"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.2 + index * 0.1 }}
+                                        >
+                                            {blog.createdAt}
+                                        </motion.time>
+                                        <motion.span
+                                            className="text-[#00FF00]/80 text-sm flex items-center"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.25 + index * 0.1 }}
+                                        >
+                                            <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
+                                            By {blog.author.username}
+                                        </motion.span>
+                                    </div>
+                                    <motion.div 
+                                        className="flex items-center text-[#00FF00]/60 text-xs"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.2 + index * 0.1 }}
+                                        transition={{ delay: 0.3 + index * 0.1 }}
                                     >
-                                        {blog.createdAt}
-                                    </motion.time>
-                                    <motion.span
-                                        className="text-[#00FF00]/80 text-sm flex items-center"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.25 + index * 0.1 }}
-                                    >
-                                        <span className="inline-block w-2 h-2 bg-[#00FF00]/40 rounded-full mr-2"></span>
-                                        By {blog.author.username}
-                                    </motion.span>
+                                        <Clock size={12} className="mr-1" />
+                                        <span>5 min read</span>
+                                    </motion.div>
                                 </div>
                                 
                                 <div className="flex flex-col gap-4 mb-3">
