@@ -1,6 +1,6 @@
 {
     "BASE_API": "http://localhost:8080/api",
-    "OWNER_ID": "1374307889514024960",
+    "OWNER_ID": "YOUR_OWNER_ID",
     "POSTS_PER_PAGE": 3,
-    "GITHUB_USERNAME": "nffdev"
+    "GITHUB_USERNAME": "YOUR_GITHUB_USERNAME"
 }
