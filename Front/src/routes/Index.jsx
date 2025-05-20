@@ -170,44 +170,36 @@ export default function Home() {
                                 
                                 <div className="flex flex-col gap-4 mb-3">
                                     {blog.blocks && blog.blocks.length > 0 ? (
-                                        blog.blocks
-                                            .sort((a, b) => a.position - b.position)
-                                            .map((block, blockIndex) => (
-                                                <motion.div 
-                                                    key={`${blog.id}-block-${blockIndex}`}
-                                                    className="w-full"
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.15 + (index * 0.05) + (blockIndex * 0.03) }}
-                                                >
-                                                    {block.type === 'text' ? (
-                                                        <motion.p
-                                                            style={{
-                                                                display: "-webkit-box",
-                                                                WebkitLineClamp: 3,
-                                                                WebkitBoxOrient: "vertical",
-                                                                overflow: "hidden",
-                                                                textOverflow: "ellipsis",
-                                                            }}
-                                                            className="leading-relaxed w-full"
-                                                        >
-                                                            {block.content}
-                                                        </motion.p>
-                                                    ) : block.type === 'image' && (
-                                                        <div className="w-full md:max-w-[60%] mx-auto mb-3">
-                                                            <img 
-                                                                src={block.content.startsWith('http') ? block.content : `${BASE_API}${block.content}`} 
-                                                                alt={`Image ${blockIndex + 1} for ${blog.title}`}
-                                                                className="w-full max-h-40 object-cover rounded-md border-2 border-[#00FF00]/30"
-                                                                onError={(e) => {
-                                                                    console.error('Image load error:', block.content);
-                                                                    e.target.style.display = 'none';
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </motion.div>
-                                            ))
+                                        <motion.div 
+                                            className="w-full"
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.15 + (index * 0.05) }}
+                                        >
+                                            <motion.p
+                                                style={{
+                                                    display: "-webkit-box",
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: "vertical",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                }}
+                                                className="leading-relaxed w-full auto-format-text"
+                                            >
+                                                {(() => {
+                                                    const textBlock = blog.blocks
+                                                        .sort((a, b) => a.position - b.position)
+                                                        .find(block => block.type === 'text');
+                                                    
+                                                    if (textBlock) {
+                                                        return textBlock.content.length > 150 
+                                                            ? textBlock.content.substring(0, 150).trim() + '...'
+                                                            : textBlock.content;
+                                                    }
+                                                    return "";
+                                                })()} 
+                                            </motion.p>
+                                        </motion.div>
                                     ) : (
                                         <div className="flex flex-col md:flex-row gap-4">
                                             {blog.imageUrl && (
@@ -231,17 +223,19 @@ export default function Home() {
                                             <motion.p
                                                 style={{
                                                     display: "-webkit-box",
-                                                    WebkitLineClamp: 3,
+                                                    WebkitLineClamp: 2,
                                                     WebkitBoxOrient: "vertical",
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                 }}
-                                                className={`leading-relaxed ${blog.imageUrl ? 'md:w-2/3' : 'w-full'}`}
+                                                className={`leading-relaxed auto-format-text ${blog.imageUrl ? 'md:w-2/3' : 'w-full'}`}
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.3 + index * 0.1 }}
                                             >
-                                                {blog.content}
+                                                {blog.content && blog.content.length > 150 
+                                                  ? blog.content.substring(0, 150).trim() + '...' 
+                                                  : blog.content}
                                             </motion.p>
                                         </div>
                                     )}
