@@ -268,60 +268,53 @@ export default function Blogs() {
                   </div>
                   <div className="space-y-4">
                     {post.blocks && post.blocks.length > 0 ? (
-                      post.blocks
-                        .sort((a, b) => a.position - b.position)
-                        .slice(0, 3)
-                        .map((block, blockIndex) => (
-                          <motion.div 
-                            key={`${post.id}-block-${blockIndex}`}
-                            className="w-full"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 + (blockIndex * 0.05) }}
-                          >
-                            {block.type === 'text' ? (
-                              <motion.p
-                                style={{
-                                  display: "-webkit-box",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                                className="leading-relaxed w-full"
-                              >
-                                {block.content}
-                              </motion.p>
-                            ) : block.type === 'image' && (
-                              <div className="w-full max-w-[200px] mx-auto my-2">
-                                <img 
-                                  src={block.content.startsWith('http') ? block.content : `${BASE_API}${block.content}`} 
-                                  alt={`Image ${blockIndex + 1} for ${post.title}`}
-                                  className="w-full h-24 object-cover rounded-md border-2 border-[#00FF00]/30"
-                                  onError={(e) => {
-                                    console.error('Image load error:', block.content);
-                                    e.target.style.display = 'none';
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </motion.div>
-                        ))
+                      <motion.div 
+                        className="w-full"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <motion.p
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                          className="leading-relaxed w-full auto-format-text"
+                        >
+                          {(() => {
+                            const textBlock = post.blocks
+                              .sort((a, b) => a.position - b.position)
+                              .find(block => block.type === 'text');
+                            
+                            if (textBlock) {
+                              return textBlock.content.length > 150 
+                                ? textBlock.content.substring(0, 150).trim() + '...'
+                                : textBlock.content;
+                            }
+                            return "";
+                          })()} 
+                        </motion.p>
+                      </motion.div>
                     ) : (
                       <motion.p
                         style={{
                           display: "-webkit-box",
-                          WebkitLineClamp: 3,
+                          WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                         }}
-                        className="leading-relaxed"
+                        className="leading-relaxed w-full auto-format-text"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                       >
-                        {post.content}
+                        {post.content && post.content.length > 150 
+                          ? post.content.substring(0, 150).trim() + '...' 
+                          : post.content}
                       </motion.p>
                     )}
                   </div>
