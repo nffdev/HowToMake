@@ -126,3 +126,29 @@ input, button {
     padding: 0 0.5rem;
   }
 }
+
+.content-block {
+  text-align: justify;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.content-block p {
+  margin-bottom: 1rem;
+}
+
+.auto-format-text {
+  text-align: justify;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: pre-line;
+}
+
+.auto-format-text::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+}

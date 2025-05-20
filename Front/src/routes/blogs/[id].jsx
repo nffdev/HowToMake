@@ -93,7 +93,7 @@ export default function BlogDetail() {
 									transition={{ delay: 0.15 + (blockIndex * 0.05) }}
 								>
 									{block.type === 'text' ? (
-										<div className="text-lg leading-relaxed">
+										<div className="text-lg leading-relaxed auto-format-text content-block">
 											{block.content}
 										</div>
 									) : block.type === 'image' && (
@@ -133,7 +133,7 @@ export default function BlogDetail() {
 							</motion.div>
 						)}
 						<motion.div
-							className="text-lg leading-relaxed"
+							className="text-lg leading-relaxed auto-format-text content-block"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.3 }}
