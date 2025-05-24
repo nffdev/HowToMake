@@ -22,7 +22,6 @@ Feel free to reach out if you:
 - Have feedback or suggestions
 - Just want to say hi
 
-> 📫 [soon@soon.com](mailto:soon@soon.com)  
 > 🌐 [soon.com](https://soon.com)  
 > 🐙 [https://github.com/nffdev](https://github.com/nffdev)
 
