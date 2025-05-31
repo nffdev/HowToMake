@@ -8,13 +8,9 @@
     <script>
       (function() {
         const faviconLink = document.getElementById('dynamic-favicon');
+        const githubUsername = 'nffdev';
         
-        fetch('/src/config.json')
-          .then(response => response.json())
-          .then(config => {
-            const githubUsername = config.GITHUB_USERNAME;
-            return fetch(`https://api.github.com/users/${githubUsername}`);
-          })
+        fetch(`https://api.github.com/users/${githubUsername}`)
           .then(response => response.json())
           .then(data => {
             if (data && data.avatar_url) {
@@ -31,7 +27,7 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root"></div>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
   </body>
 </html>
